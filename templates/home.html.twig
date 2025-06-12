@@ -1,0 +1,309 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Releases{% endblock %}
+
+{% block stylesheets %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .album-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .album-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    .play-btn {
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .glass-effect {
+        backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .pagination-btn {
+        transition: all 0.2s ease;
+    }
+    .pagination-btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .pagination-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.49.661.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">Latest Releases</h1>
+                        <p class="text-gray-300 text-sm">Discover new music</p>
+                    </div>
+                </div>
+                <div class="hidden sm:flex items-center space-x-4">
+                    <button class="text-gray-300 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                    <button class="text-gray-300 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Section -->
+        <div class="glass-effect rounded-2xl p-6 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-white">{{ pagination.total|default(albums|length) }}</div>
+                    <div class="text-gray-400 text-sm">Total Releases</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-400">{{ albums|filter(album => album.album_type == 'album')|length }}</div>
+                    <div class="text-gray-400 text-sm">Albums</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-purple-400">{{ albums|filter(album => album.album_type == 'single')|length }}</div>
+                    <div class="text-gray-400 text-sm">Singles</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-blue-400">{{ albums|map(album => album.artists|length)|reduce((a, b) => a + b, 0) }}</div>
+                    <div class="text-gray-400 text-sm">Artists</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination Info -->
+        {% if pagination %}
+        {% set currentPage = (pagination.offset / pagination.limit) + 1 %}
+        {% set totalPages = (pagination.total / pagination.limit)|round(0, 'ceil') %}
+        <div class="glass-effect rounded-lg p-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="text-gray-300 text-sm">
+                    Showing {{ pagination.offset + 1 }} to
+                    {{ min(pagination.offset + pagination.limit, pagination.total) }}
+                    of {{ pagination.total }} releases
+                </div>
+                <div class="text-gray-400 text-sm">
+                    Page {{ currentPage }} of {{ totalPages }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Albums Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+            {% for album in albums %}
+            <div class="album-card group glass-effect rounded-2xl overflow-hidden">
+                <!-- Album Cover -->
+                <div class="relative aspect-square overflow-hidden">
+                    <img
+                        src="{{ album.images[0].url|default('https://via.placeholder.com/400x400/1f2937/9ca3af?text=No+Image') }}"
+                        alt="{{ album.name }}"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                    />
+
+                    <!-- Play Button Overlay -->
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                        <button class="play-btn w-16 h-16 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300">
+                            <svg class="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Album Type Badge -->
+                    <div class="absolute top-3 right-3">
+                        <span class="px-2 py-1 text-xs font-medium bg-black bg-opacity-70 text-white rounded-full backdrop-blur-sm">
+                            {{ album.album_type|default('album')|title }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Album Info -->
+                <div class="p-4">
+                    <h3 class="font-semibold text-white text-lg mb-2 line-clamp-2 group-hover:text-green-400 transition-colors">
+                        {{ album.name }}
+                    </h3>
+
+                    <!-- Artists -->
+                    <div class="flex flex-wrap gap-1 mb-3">
+                        {% for artist in album.artists %}
+                            <span class="text-gray-300 text-sm hover:text-white transition-colors cursor-pointer">
+                                {{ artist.name }}{% if not loop.last %},{% endif %}
+                            </span>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Release Date & Track Count -->
+                    <div class="flex items-center justify-between text-xs text-gray-400 mb-4">
+                        <span>{{ album.release_date|date('M d, Y') }}</span>
+                        <span>{{ album.total_tracks }} track{{ album.total_tracks != 1 ? 's' : '' }}</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-2">
+                        <button class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                            Play
+                        </button>
+                        <button class="p-2 text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </button>
+                        <button class="p-2 text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination Controls -->
+        {% if pagination and pagination.total > pagination.limit %}
+        {% set currentPage = (pagination.offset / pagination.limit) + 1 %}
+        {% set totalPages = (pagination.total / pagination.limit)|round(0, 'ceil') %}
+        {% set hasPrevious = pagination.previous is not null %}
+        {% set hasNext = pagination.next is not null %}
+
+        <div class="glass-effect rounded-2xl p-6">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                <!-- Mobile Pagination Info -->
+                <div class="sm:hidden text-center text-gray-300 text-sm">
+                    Page {{ currentPage }} of {{ totalPages }}
+                </div>
+
+                <!-- Pagination Buttons -->
+                <div class="flex items-center gap-2">
+                    <!-- First Page -->
+                    {% if currentPage > 2 %}
+                    <a href="?offset=0&limit={{ pagination.limit }}" class="pagination-btn px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+                        </svg>
+                    </a>
+                    {% endif %}
+
+                    <!-- Previous Page -->
+                    {% if hasPrevious %}
+                    <a href="?offset={{ pagination.offset - pagination.limit }}&limit={{ pagination.limit }}" class="pagination-btn px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-all flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        <span class="hidden sm:inline">Previous</span>
+                    </a>
+                    {% else %}
+                    <button disabled class="pagination-btn px-4 py-2 text-sm font-medium text-gray-500 rounded-lg cursor-not-allowed flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        <span class="hidden sm:inline">Previous</span>
+                    </button>
+                    {% endif %}
+
+                    <!-- Page Numbers -->
+                    <div class="hidden sm:flex items-center gap-1">
+                        {% set startPage = max(1, currentPage - 2) %}
+                        {% set endPage = min(totalPages, currentPage + 2) %}
+
+                        {% for page in startPage..endPage %}
+                            {% set pageOffset = (page - 1) * pagination.limit %}
+                            {% if page == currentPage %}
+                                <span class="px-4 py-2 text-sm font-semibold bg-green-500 text-white rounded-lg">
+                                    {{ page }}
+                                </span>
+                            {% else %}
+                                <a href="?offset={{ pageOffset }}&limit={{ pagination.limit }}" class="pagination-btn px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-all">
+                                    {{ page }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Next Page -->
+                    {% if hasNext %}
+                    <a href="?offset={{ pagination.offset + pagination.limit }}&limit={{ pagination.limit }}" class="pagination-btn px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-all flex items-center gap-2">
+                        <span class="hidden sm:inline">Next</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    {% else %}
+                    <button disabled class="pagination-btn px-4 py-2 text-sm font-medium text-gray-500 rounded-lg cursor-not-allowed flex items-center gap-2">
+                        <span class="hidden sm:inline">Next</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                    {% endif %}
+
+                    <!-- Last Page -->
+                    {% if currentPage < totalPages - 1 %}
+                    {% set lastPageOffset = (totalPages - 1) * pagination.limit %}
+                    <a href="?offset={{ lastPageOffset }}&limit={{ pagination.limit }}" class="pagination-btn px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Items Per Page Selector -->
+                <div class="flex items-center gap-3">
+                    <label class="text-gray-300 text-sm">Show:</label>
+                    <select class="bg-gray-800 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" onchange="window.location.href='?offset=0&limit=' + this.value">
+                        <option value="10" {{ pagination.limit == 10 ? 'selected' : '' }}>10</option>
+                        <option value="20" {{ pagination.limit == 20 ? 'selected' : '' }}>20</option>
+                        <option value="50" {{ pagination.limit == 50 ? 'selected' : '' }}>50</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Empty State -->
+        {% if albums is empty %}
+        <div class="text-center py-16">
+            <div class="w-24 h-24 mx-auto bg-gray-800 rounded-full flex items-center justify-center mb-6">
+                <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-2">No releases found</h3>
+            <p class="text-gray-400">Check back later for new music releases</p>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}
